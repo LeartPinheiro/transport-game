@@ -18,6 +18,7 @@ sideToDirection = {
     "up": 3,
     "down": 4
 }
+
    
 def reverseSide(side):
     if side == "left":
