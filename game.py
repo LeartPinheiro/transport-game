@@ -5,15 +5,19 @@ import world as wd
 from utils import *
 pygame.init()
 
-screen = pygame.display.set_mode((720, 720))
+screenWidth = 720
+screenHeight = 720
+
+screen = pygame.display.set_mode((screenWidth, screenHeight))
 clock = pygame.time.Clock()
 FPS = 60  # Frames per second.
 
 
 gridWidth = 10
 gridHeight = 10
-tileWidth = 64
-
+originalTileWidth = 64
+zooms = [24,32,48,64]
+zoom = 0
 world = wd.World(gridWidth, gridHeight)
 
 spriteCache = {}
@@ -34,11 +38,17 @@ def loadSprite(name):
         spriteCache[name] = sprite
         return sprite
 
+def zoomedTileWidth():
+    return zooms[zoom]
+
+def zoomedSprite(sprite):
+    return pygame.transform.scale(sprite, (zoomedTileWidth(), zoomedTileWidth()))
+
 def getTileSprite(tile):
     if tile["type"] == 0:
-        return loadSprite("empty")
+        return zoomedSprite(loadSprite("empty"))
     elif tile["type"] == 1:
-        return loadSprite(getRoadSprite(tile["connections"]))
+        return zoomedSprite(loadSprite(getRoadSprite(tile["connections"])))
 
 def allImagesNames():
     return [f.replace('.png', '').split(' ') for f in os.listdir("images") if f.endswith(".png")]
@@ -52,20 +62,17 @@ def drawGrid():
         for y in range(gridHeight):
             tile = world.getTile(x, y)
             sprite = getTileSprite(tile)
-            screen.blit(sprite, (x * tileWidth, y * tileWidth))
+            screen.blit(sprite, (x * zoomedTileWidth(), y * zoomedTileWidth()))
     drawTilesBorders()
 
 def drawTilesBorders():
     for x in range(gridWidth):
-        pygame.draw.line(screen, (0, 0, 0), (x * tileWidth, 0), (x * tileWidth, 720), 1)
+        pygame.draw.line(screen, (0, 0, 0), (x * zoomedTileWidth(), 0), (x * zoomedTileWidth(), screenHeight))
         for y in range(gridHeight):
-            pygame.draw.line(screen, (0, 0, 0), (0, y * tileWidth), (720, y * tileWidth), 1)
+            pygame.draw.line(screen, (0, 0, 0), (0, y * zoomedTileWidth()), (screenWidth, y * zoomedTileWidth()))
             
-
-
 def mouseToGrid(mouseX, mouseY):
-    return (mouseX // tileWidth, mouseY // tileWidth)
-
+    return (mouseX // zoomedTileWidth(), mouseY // zoomedTileWidth())
 
 def mouseDelete(event):
     x, y = mouseToGrid(event.pos[0], event.pos[1])
@@ -127,6 +134,16 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_a:
                 world.connectTile(world.getTile(0, 0), "right")
+            #right arrow key
+            if event.key == pygame.K_UP:
+                zoom += 1
+                if zoom >= len(zooms):
+                    zoom = len(zooms) - 1
+            #left arrow key
+            if event.key == pygame.K_DOWN:
+                zoom -= 1
+                if zoom < 0:
+                    zoom = 0
 
     screen.fill((0, 0, 0))
     drawGrid()
