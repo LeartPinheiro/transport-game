@@ -31,7 +31,7 @@ class World:
         else:
             return False
 
-    def deleteRoad(self,tile):
+    def deleteTile(self,tile):
         tile["type"] = 0
         tile["connections"] = []
         for side in sides:
@@ -53,6 +53,14 @@ class World:
     def manageTile(self,tile):
         if tile["type"] == 0:
             return
-        if len(tile["connections"]) == 0:
+        self.manageRoadTile(tile)
+        
+    def manageRoadTile(self,tile):
+        if len(tile["connections"]) == 0 and tile["type"] == 1:
             tile["type"] = 0
             tile["connections"] = []
+
+    def addPlace(self,x,y):
+        if self.getTile(x,y)["type"] == 0:
+            self.getTile(x,y)["type"] = 2
+    

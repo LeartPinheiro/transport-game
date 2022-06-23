@@ -16,8 +16,8 @@ FPS = 60  # Frames per second.
 gridWidth = 10
 gridHeight = 10
 originalTileWidth = 64
-zooms = [24,32,48,64]
-zoom = 0
+zooms = [24,32,48,64,96,128]
+zoom = 2
 world = wd.World(gridWidth, gridHeight)
 
 spriteCache = {}
@@ -48,7 +48,9 @@ def getTileSprite(tile):
     if tile["type"] == 0:
         return zoomedSprite(loadSprite("empty"))
     elif tile["type"] == 1:
-        return zoomedSprite(loadSprite(getRoadSprite(tile["connections"])))
+        return zoomedSprite(loadSprite("roads/" + getRoadSprite(tile["connections"])))
+    elif tile["type"] == 2:
+        return zoomedSprite(loadSprite("place"))
 
 def allImagesNames():
     return [f.replace('.png', '').split(' ') for f in os.listdir("images") if f.endswith(".png")]
@@ -78,7 +80,7 @@ def mouseDelete(event):
     x, y = mouseToGrid(event.pos[0], event.pos[1])
     tile = world.getTile(x, y)
     if tile is not None:
-        world.deleteRoad(tile)
+        world.deleteTile(tile)
 
 def mouseDown(event):
     if event.button == 1:
@@ -95,7 +97,14 @@ def mouseLeftDown(event):
 
 def mouseLeftUp(event):
     global lastTile
+    mouseAddPlace(event)
     lastTile = None
+
+def mouseAddPlace(event):
+    x, y = mouseToGrid(event.pos[0], event.pos[1])
+    tile = world.getTile(x, y)
+    if tile is not None and lastTile is not None and tile == lastTile:
+        world.addPlace(x,y)
 
 def mouseRightDown(event):
     mouseDelete(event)
