@@ -1,11 +1,11 @@
 sides = {
-    "left":[-1, 0],
-    "right":[1, 0],
-    "up":[0, -1],
-    "down":[0, 1]
+    "left": [-1, 0],
+    "right": [1, 0],
+    "up": [0, -1],
+    "down": [0, 1]
 }
 
-directionsToSide ={
+directionsToSide = {
     1: "left",
     2: "right",
     3: "up",
@@ -19,7 +19,7 @@ sideToDirection = {
     "down": 4
 }
 
-   
+
 def reverseSide(side):
     if side == "left":
         return "right"
@@ -29,6 +29,7 @@ def reverseSide(side):
         return "down"
     elif side == "down":
         return "up"
+
 
 def relativeSide(tile1, tile2):
     for side in sides:

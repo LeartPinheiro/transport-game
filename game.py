@@ -45,13 +45,24 @@ def zoomedTileWidth():
 def zoomedSprite(sprite):
     return pygame.transform.scale(sprite, (zoomedTileWidth(), zoomedTileWidth()))
 
+def getGarageSprite(garage):
+    count = len(garage.vehicles)
+    spriteName = "garage" + str(count)
+    return spriteName
+
+#need to refactor this
 def getTileSprite(tile):
+    
     if tile["type"] == 0:
         return zoomedSprite(loadSprite("empty"))
     elif tile["type"] == 1:
         return zoomedSprite(loadSprite("roads/" + getRoadSprite(tile["connections"])))
     elif tile["type"] == 2:
         return zoomedSprite(loadSprite("place"))
+    elif tile["type"] == 3:
+        sprite = zoomedSprite(loadSprite("empty"))
+        sprite.blit(zoomedSprite(loadSprite(getGarageSprite(tile["obj"]))), (0, 0))
+        return sprite
 
 def allImagesNames():
     return [f.replace('.png', '').split(' ') for f in os.listdir("images") if f.endswith(".png")]
@@ -59,7 +70,6 @@ def allImagesNames():
 def getRoadSprite(sides):
     return ' '.join(sorted(sides))
 
-#draw grid with a border on tiles
 def drawGrid():
     for x in range(gridWidth):
         for y in range(gridHeight):
@@ -76,9 +86,9 @@ def drawTilesBorders():
 
 def rotateSprite(sprite, side):
     if side == "left":
-        return pygame.transform.rotate(sprite, -90)
-    elif side == "right":
         return pygame.transform.rotate(sprite, 90)
+    elif side == "right":
+        return pygame.transform.rotate(sprite, -90)
     elif side == "up":
         return sprite
     elif side == "down":
@@ -97,18 +107,20 @@ def drawVehicle(vehicle):
     direction = vehicle.direction
     width = zoomedTileWidth() / car_sprite_divider[0]
     height = zoomedTileWidth() / car_sprite_divider[1]
+    if direction == "left" or direction == "right":
+        width = zoomedTileWidth() / car_sprite_divider[1]
+        height = zoomedTileWidth() / car_sprite_divider[0]
     side = sideCods[direction]
-    xa = side[0] * zoomedTileWidth() / 100 * (100 - vehicle.move)
-    ya = side[1] * zoomedTileWidth() / 100 * (100 - vehicle.move)
+    xa = side[0] * zoomedTileWidth() / 100 * (100 - vehicle.moving)
+    ya = side[1] * zoomedTileWidth() / 100 * (100 - vehicle.moving)
     x = vehicle.x * zoomedTileWidth() + zoomedTileWidth() / 2 - width / 2 + xa
     y = vehicle.y * zoomedTileWidth() + zoomedTileWidth() / 2 - height / 2 + ya
+
     screen.blit(sprite, (x,y))
-    
-            
+      
 def drawVehicles():
     for vehicle in world.vehicles:
         drawVehicle(vehicle)
-        print("drawing vehicle")
 
 def draw():
     drawGrid()
@@ -121,7 +133,8 @@ def mouseDelete(event):
     x, y = mouseToGrid(event.pos[0], event.pos[1])
     tile = world.getTile(x, y)
     if tile is not None:
-        world.deleteTile(tile)
+        if tile["type"] == 1:
+            world.deleteTile(tile)
 
 def mouseDown(event):
     if event.button == 1:
@@ -145,11 +158,11 @@ def mouseAddPlace(event):
     x, y = mouseToGrid(event.pos[0], event.pos[1])
     tile = world.getTile(x, y)
     if tile is not None and lastTile is not None and tile == lastTile:
-        world.addPlace(x,y)
+        #world.addGarage(x,y)
+        pass
 
 def mouseRightDown(event):
     mouseDelete(event)
-
 
 def mouseRoad(event):
     x, y = mouseToGrid(event.pos[0], event.pos[1])
@@ -168,7 +181,33 @@ def mouseMove(event):
         mouseRoad(event)
     elif event.buttons[2] == 1:
         mouseDelete(event)
-    
+
+timer = 5000
+
+def createUpdate():
+    global timer
+    timer -= 1000 / 60
+    if timer <= 0:
+        timer = 30000
+        empty = world.pickRandomEmpty()
+        if empty is not None:
+            rand = random.randint(0,100)
+            if rand < 30:
+                world.addGarage(empty[0], empty[1])
+            elif rand < 100:
+                world.addBuilding(empty[0], empty[1])
+
+def addFirstGrid():
+    empty = world.pickRandomEmpty()
+    if empty is not None:
+        world.addGarage(empty[0], empty[1])
+    empty = world.pickRandomEmpty()
+    if empty is not None:
+        world.addBuilding(empty[0], empty[1])
+    if empty is not None:
+        world.addBuilding(empty[0], empty[1])
+addFirstGrid()
+
 while True:
     clock.tick(FPS)
     for event in pygame.event.get():
@@ -182,28 +221,10 @@ while True:
         if event.type == pygame.MOUSEMOTION:
             mouseMove(event)
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
-                world.connectTile(world.getTile(5, 5), "right")
-            #right arrow key
-            if event.key == pygame.K_UP:
-                zoom += 1
-                if zoom >= len(tilesZooms):
-                    zoom = len(tilesZooms) - 1
-            #left arrow key
-            if event.key == pygame.K_DOWN:
-                zoom -= 1
-                if zoom < 0:
-                    zoom = 0
-            if event.key == pygame.K_r:
-                world.addVehicle(0, 1, "up")
-            if event.key == pygame.K_s:
-                x = world.vehicles[0].x
-                y = world.vehicles[0].y
-                world.vehicles[0].setPath([[x, y + 1]])
-    
-
+            pass
     screen.fill((0, 0, 0))
     draw()
     world.update()
+    createUpdate()
     pygame.display.flip()
     
