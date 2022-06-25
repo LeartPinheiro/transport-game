@@ -1,7 +1,8 @@
 import utils
 
+
 class Connectable:
-    def __init__(self,x,y):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
         self._tags = ["connectable"]
@@ -12,15 +13,15 @@ class Connectable:
     def getTags(self):
         return self._tags
 
-    def addTag(self,tag):
+    def addTag(self, tag):
         if tag not in self._tags:
             self._tags.append(tag)
 
-    def removeTag(self,tag):
+    def removeTag(self, tag):
         if tag in self._tags:
             self._tags.remove(tag)
 
-    def hasTag(self,tag):
+    def hasTag(self, tag):
         for t in self._tags:
             if t in tag:
                 return True
@@ -30,48 +31,46 @@ class Connectable:
 
     def isPassable(self):
         return self._isPassable
-    
+
     def isReserved(self):
         return self._reservedTo is not None
 
-    def isReservedTo(self,vehicle):
+    def isReservedTo(self, vehicle):
         return self._reservedTo is vehicle
 
-    def setReservedTo(self,vehicle):
+    def setReservedTo(self, vehicle):
         self._reservedTo = vehicle
 
     def clearReservedTo(self):
         self._reservedTo = None
-    
+
     def getSidesConnected(self):
         return self._sidesConnected
-    
-    def isConnectedTo(self,connectable):
-        side1 = utils.relativeSide(self,connectable)
-        side2 = utils.relativeSide(connectable,self)
+
+    def isConnectedTo(self, connectable):
+        side1 = utils.relativeSide(self, connectable)
+        side2 = utils.relativeSide(connectable, self)
         if side1 in self._sidesConnected and side2 in connectable._sidesConnected:
             return True
         return False
-    
-    def connectTo(self,connectable):
+
+    def connectTo(self, connectable):
         if self.isConnectable() and connectable.isConnectable():
-            side = utils.relativeSide(self,connectable)
+            side = utils.relativeSide(self, connectable)
             if side is not None:
                 self.addSide(side)
                 connectable.addSide(utils.getOppositeSide(side))
                 return True
         return False
 
-    def addSide(self,side):
+    def addSide(self, side):
         if side not in self._sidesConnected:
             self._sidesConnected.append(side)
             return True
         return False
-    
-    def removeSide(self,side):
+
+    def removeSide(self, side):
         if side in self._sidesConnected:
             self._sidesConnected.remove(side)
             return True
         return False
-
-    

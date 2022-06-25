@@ -20,7 +20,6 @@ sideToDirection = {
 }
 
 
-
 def getOppositeSide(side):
     if side == "left":
         return "right"

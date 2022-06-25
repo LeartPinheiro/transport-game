@@ -9,13 +9,11 @@ gridHeight = 10
 
 world = wd.World(gridWidth, gridHeight)
 render = rd.Render(world)
-input = inp.Input(rd.pygame,world,render)
-
+input = inp.Input(rd.pygame, world, render)
 
 
 while True:
-    #world.update()
+    # world.update()
     world.update()
     input.update()
     render.update()
-
