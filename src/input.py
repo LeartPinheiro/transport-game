@@ -6,6 +6,7 @@ class Input:
         self.world = world
         self.render = render
         self.lastTile = None
+        self.mouse = (0,0)
 
     def screenToWorld(self,x,y):
         return self.render.screenToWorld(x,y)
@@ -30,6 +31,7 @@ class Input:
             self.mouseRightDown(event)
 
     def mouseMove(self,event):
+        self.mouse = event.pos
         if event.buttons[0] == 1:
             self.mouseRoad(event)
         elif event.buttons[2] == 1:
@@ -63,6 +65,12 @@ class Input:
             self.render.zoomIn()
         if event.key == self.pygame.K_DOWN:
             self.render.zoomOut()
+        if event.key == self.pygame.K_g:
+            self.render.showGridLines = not self.render.showGridLines
+        if event.key == self.pygame.K_p:
+            self.render.showPaths = not self.render.showPaths
+        if event.key == self.pygame.K_t:
+            self.test()
 
     def update(self):
         for event in self.pygame.event.get():
@@ -80,3 +88,9 @@ class Input:
             if event.type == self.pygame.KEYUP:
                 #self.keyUp(event)
                 pass
+
+    def test(self):
+        x,y = self.screenToWorld(self.mouse[0],self.mouse[1])
+        self.world.vehicles.newVehicle(x,y)
+        index = len(self.world.vehicles.all()) - 1
+        self.world.vehicles._vehicles[index]._target = (9 - index ,9 - index)

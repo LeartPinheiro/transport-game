@@ -30,8 +30,8 @@ def findPath(world,startX,startY,targetX,targetY):
             y = current[1] + utils.sides[side][1]
             tile1 = world.getTile(current[0],current[1])
             tile2 = world.getTile(x,y)
-            if world.isPassable(x,y) and world.isConnected(tile1,tile2):
-                if not world.hasParkedVehicle(x,y):
+            if world.isPassable(x,y) and tile1.hasTag("connectable"):
+                if not world.vehicles.hasStoppedVehicle(x,y) and tile1.isConnectedTo(tile2):
                     if not isInList(openList,x,y) and not isInList(closedList,x,y):
                         cost = current[2] + 1
                         openList.append((x,y,cost,current))

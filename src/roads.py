@@ -4,7 +4,7 @@ class Road(Connectable):
     def __init__(self,x,y):
         super().__init__(x,y)
         self.type = "road"
-        self._isPassable = True
+        self.addTag("passable")
 
 class Roads:
     def __init__(self,world):
@@ -36,7 +36,6 @@ class Roads:
     def connectPlaces(self,loc1,loc2):
         if not loc1.hasTag("connectable") or not loc2.hasTag("connectable"):
             return False
-        print(f'connecting {loc1} to {loc2}')
         return loc1.connectTo(loc2)
 
     def connectLocalities(self,x,y,x2,y2):
@@ -50,8 +49,35 @@ class Roads:
             self.connectPlaces(loc1,loc2)
             return True
         return False
-        
+
+    def NeededByaVehicle(self,road):
+        if road is None:
+            return False
+        if road.isReserved() or self._world.vehicles.getVehicle(road.x,road.y) is not None:
+            return True
+        return False
+
+    def neededByAnother(self,road):
+        for side in road.getSidesConnected():
+            road2 = self.getRoad(road.x + utils.sides[side][0],road.y + utils.sides[side][1])
+            if road is not None:
+                if self.NeededByaVehicle(road2):
+                    if len(road2.getSidesConnected()) == 1:
+                        return True
+        return False
+
+    def canBeDeleted(self,road):
+        if road is None:
+            return False
+        if self.NeededByaVehicle(road):
+            return False
+        if self.neededByAnother(road):
+            return False
+        return True
+
     def deleteRoad(self,road):
+        if not self.canBeDeleted(road):
+            return False
         for side in road.getSidesConnected():
             road2 = self.getRoad(road.x + utils.sides[side][0],road.y + utils.sides[side][1])
             if road2 is not None:

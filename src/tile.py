@@ -4,21 +4,21 @@ class Tile:
         self.x = x
         self.y = y
         self.type = 'empty'
-        self.tags = []
+        self._tags = []
 
     def getTags(self):
-        return self.tags
+        return self._tags
 
     def addTag(self,tag):
-        if tag not in self.tags:
-            self.tags.append(tag)
+        if tag not in self._tags:
+            self._tags.append(tag)
 
     def removeTag(self,tag):
-        if tag in self.tags:
-            self.tags.remove(tag)
+        if tag in self._tags:
+            self._tags.remove(tag)
 
     def hasTag(self,tag):
-        return tag in self.tags
+        return tag in self._tags
 
     def __str__(self) -> str:
         return f'Tile({self.x},{self.y})'

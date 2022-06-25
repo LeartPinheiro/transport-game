@@ -21,7 +21,9 @@ class Connectable:
             self._tags.remove(tag)
 
     def hasTag(self,tag):
-        return tag in self._tags
+        for t in self._tags:
+            if t in tag:
+                return True
 
     def isConnectable(self):
         return self.hasTag("connectable")
@@ -45,9 +47,9 @@ class Connectable:
         return self._sidesConnected
     
     def isConnectedTo(self,connectable):
-        side1 = utils.getSide(self.x,self.y,connectable.x,connectable.y)
-        side2 = utils.getSide(connectable.x,connectable.y,self.x,self.y)
-        if side1 in self._sidesConnected and side2 in connectable.sidesConnected:
+        side1 = utils.relativeSide(self,connectable)
+        side2 = utils.relativeSide(connectable,self)
+        if side1 in self._sidesConnected and side2 in connectable._sidesConnected:
             return True
         return False
     
