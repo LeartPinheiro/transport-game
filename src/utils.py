@@ -20,6 +20,7 @@ sideToDirection = {
 }
 
 
+
 def getOppositeSide(side):
     if side == "left":
         return "right"
@@ -33,6 +34,6 @@ def getOppositeSide(side):
 
 def relativeSide(tile1, tile2):
     for side in sides:
-        if tile1["x"] + sides[side][0] == tile2["x"] and tile1["y"] + sides[side][1] == tile2["y"]:
+        if tile1.x + sides[side][0] == tile2.x and tile1.y + sides[side][1] == tile2.y:
             return side
     return None

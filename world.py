@@ -1,6 +1,7 @@
 from utils import *
 import pathfinder
 import random
+import roads
 
 class Truck:
     def __init__(self,x,y,direction,world):
@@ -60,7 +61,17 @@ class Truck:
             self.moving -= self.speed
         self.world.updateVehicleDirection(self)
                 
-            
+
+
+
+class Tile:
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
+        self.type = "empty"
+
+
+
 class Building:
     def __init__(self,x,y):
         self.x = x
@@ -113,48 +124,50 @@ class Logistics:
     def update():
         pass
         
-
+class Tile:
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
+        self.type = "empty"
 
 class World:
     def __init__(self,width,height):
         self.width = width
         self.height = height
         self.resetGrid()
+        self.roads = roads.Roads(self)
         self.vehicles = []
-
-    def tileModel(self,x,y):
-        return {"x": x, "y": y,"type": 0,"connections": [],
-                    "reservedTo": None,"obj": None}
+        self.garages = []
+        self.buildings = []
 
     def resetGrid(self):
-        self.grid = []
-        for x in range(self.width):
-            self.grid.append([])
-            for y in range(self.height):
-                self.grid[x].append(self.tileModel(x,y))
+        self.roads = roads.Roads(self)
+        self.vehicles = []
+        self.garages = []
+        self.buildings = []
+    
+    def allTilesObjects(self):
+        pass
+
 
     def getTile(self,x,y):
         if x < 0 or x >= self.width or y < 0 or y >= self.height:
             return None
-        return self.grid[x][y]
+        return Tile(x,y)
 
-    def connectTile(self,tile, side):
-        target = self.getTile(tile["x"] + sides[side][0], tile["y"] + sides[side][1])
-        if target is not None:
-            if tile["type"] == 0:
-                tile["type"] = 1
-            if not side in tile["connections"]:
-                tile["connections"].append(side)
-                self.connectTile(target, reverseSide(side))
-            return True
-        else:
-            return False
+    def getGrid(self):
+        grid = []
+        for x in range(self.width):
+            grid.append([])
+            for y in range(self.height):
+                grid[x].append(self.getTile(x,y))
+        return grid
 
     def deleteTile(self,tile):
         for side in sides:
             target = self.getTile(tile["x"] + sides[side][0], tile["y"] + sides[side][1])
             if target is not None:
-                reversedDir = reverseSide(side)
+                reversedDir = getOppositeSide(side)
                 if reversedDir in target["connections"]:
                     target["connections"].remove(reversedDir)
                     self.manageTile(target)
@@ -167,7 +180,7 @@ class World:
         side = relativeSide(tile1, tile2)
         if side is None:
             return False
-        side2 = reverseSide(side)
+        side2 = getOppositeSide(side)
         if side in tile1["connections"] and side2 in tile2["connections"]:
             return True
 
@@ -289,5 +302,4 @@ class World:
             return None
         return pathfinder.findPath(self,x,y,targetX,targetY)
 
-    
     

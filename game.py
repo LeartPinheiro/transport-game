@@ -173,7 +173,7 @@ def mouseRoad(event):
     if tileExists and lastTileExists and tile != lastTile:
         side = relativeSide(lastTile, tile)
         if side is not None:
-            world.connectTile(lastTile, side)
+            world.roads.connectLocalities(lastTile, tile)
     lastTile = tile
 
 def mouseMove(event):
@@ -209,13 +209,13 @@ def addFirstGrid():
 #addFirstGrid()
 
 def simpleTest():
-    world.connectTile(world.getTile(0, 0), "right")
+    world.roads.connectLocalities(world.getTile(0, 0), "right")
     world.createVehicle(0, 0, "up")
     world.vehicles[0].target = (9, 9)
-    world.connectTile(world.getTile(5, 5), "right")
+    world.roads.connectLocalities(world.getTile(5, 5), "right")
     world.createVehicle(5, 5, "up")
     world.vehicles[1].target = (0, 0)
-    world.connectTile(world.getTile(8, 8), "right")
+    world.roads.connectLocalities(world.getTile(8, 8), "right")
     world.createVehicle(8, 8, "up")
     world.vehicles[2].target = (0, 9)
 
