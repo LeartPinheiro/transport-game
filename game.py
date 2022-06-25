@@ -206,7 +206,21 @@ def addFirstGrid():
         world.addBuilding(empty[0], empty[1])
     if empty is not None:
         world.addBuilding(empty[0], empty[1])
-addFirstGrid()
+#addFirstGrid()
+
+def simpleTest():
+    world.connectTile(world.getTile(0, 0), "right")
+    world.createVehicle(0, 0, "up")
+    world.vehicles[0].target = (9, 9)
+    world.connectTile(world.getTile(5, 5), "right")
+    world.createVehicle(5, 5, "up")
+    world.vehicles[1].target = (0, 0)
+    world.connectTile(world.getTile(8, 8), "right")
+    world.createVehicle(8, 8, "up")
+    world.vehicles[2].target = (0, 9)
+
+simpleTest()
+
 
 while True:
     clock.tick(FPS)
@@ -225,6 +239,6 @@ while True:
     screen.fill((0, 0, 0))
     draw()
     world.update()
-    createUpdate()
+    #createUpdate()
     pygame.display.flip()
     
