@@ -134,8 +134,8 @@ class Render:
             height = self.zoomedTileWidth() / car_sprite_divider[0]
         side = utils.sides[direction]
         tileWid = self.zoomedTileWidth()
-        xa = side[0] * tileWid / 100 * (100 - vehicle.moveNeeded())
-        ya = side[1] * tileWid / 100 * (100 - vehicle.moveNeeded())
+        xa = side[0] * tileWid / 100 * (vehicle.moveProgress())
+        ya = side[1] * tileWid / 100 * (vehicle.moveProgress())
         x = vehicle.x * tileWid + tileWid / 2 - width / 2 + xa
         y = vehicle.y * tileWid + tileWid / 2 - height / 2 + ya
         screen.blit(sprite, (x, y))
@@ -144,7 +144,7 @@ class Render:
         for vehicle in self.world.vehicles.all():
             tile = self.world.getTile(vehicle.x, vehicle.y)
             if tile is not None:
-                if tile.type == "road" or vehicle.moveNeeded() is not 100:
+                if tile.type == "road" or vehicle.moveProgress() is not 100:
                     self.drawVehicle(vehicle)
 
     def draw(self):

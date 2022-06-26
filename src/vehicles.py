@@ -9,14 +9,14 @@ class Vehicle:
         self._direction = "up"
         self._world = world
         self._speed = 4
-        self._moveNeeded = 100
+        self._moveProgress = 0
         self._path = None
         self._target = None
         self._packageTarget = None
         self._inventory = []
 
-    def moveNeeded(self):
-        return self._moveNeeded
+    def moveProgress(self):
+        return self._moveProgress
 
     def setTarget(self, target):
         self._target = target
@@ -64,14 +64,14 @@ class Vehicle:
             return
         if self._path is None:
             self.updatePath()
-        if self._moveNeeded <= 0:
-            self._moveNeeded = 100
+        if self._moveProgress >= 100:
+            self._moveProgress = 0
             tile = self._world.getTile(self.x, self.y)
             tile._reservedTo = None
             self.x, self.y = self._path[0]
             self.updatePath()
         if self.canMove():
-            self._moveNeeded -= self._speed
+            self._moveProgress += self._speed
 
 
 class Vehicles:
@@ -89,7 +89,7 @@ class Vehicles:
 
     def hasStoppedVehicle(self, x, y):
         for vehicle in self._vehicles:
-            if vehicle.x == x and vehicle.y == y and vehicle._moveNeeded == 100:
+            if vehicle.x == x and vehicle.y == y and vehicle._moveProgress == 100:
                 return True
         return False
 

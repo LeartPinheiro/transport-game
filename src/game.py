@@ -13,7 +13,6 @@ input = inp.Input(rd.pygame, world, render)
 
 
 while True:
-    # world.update()
     world.update()
     input.update()
     render.update()
