@@ -159,5 +159,13 @@ class Render:
         pygame.display.flip()
         self.clock.tick(FPS)
 
+    def pathsUpdate(self):
+        paths = []
+        for vehicle in self.world.vehicles.all():
+            if vehicle._path is not None:
+                paths.append(vehicle._path)
+        self.pathsToDraw = paths
+
     def update(self):
+        self.pathsUpdate()
         self.draw()

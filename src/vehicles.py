@@ -38,6 +38,9 @@ class Vehicle:
     def canMove(self):
         if self._path is None:
             return False
+        if self._world.vehicles.getVehicle(self._path[0][0], self._path[0][1]) is not None and self._path[0] != None:
+            self.updatePath()
+            return False
         nextTile = self._world.getTile(self._path[0][0], self._path[0][1])
         reservedTo = nextTile._reservedTo
         if reservedTo is not None:
@@ -51,9 +54,11 @@ class Vehicle:
         if self.x == self._target[0] and self.y == self._target[1]:
             self._target = None
             self._path = None
+            self._world.roads.cleanReservationsFrom(self)
             return
         if self._target is None:
             self._path = None
+            self._world.roads.cleanReservationsFrom(self)
             return
         x, y = self.x, self.y
         xt, yt = self._target[0], self._target[1]
@@ -73,7 +78,6 @@ class Vehicle:
         if self.canMove():
             self._moveProgress += self._speed
 
-
 class Vehicles:
     def __init__(self, world):
         self._world = world
@@ -89,7 +93,7 @@ class Vehicles:
 
     def hasStoppedVehicle(self, x, y):
         for vehicle in self._vehicles:
-            if vehicle.x == x and vehicle.y == y and vehicle._moveProgress == 100:
+            if vehicle.x == x and vehicle.y == y and vehicle._moveProgress == 0:
                 return True
         return False
 

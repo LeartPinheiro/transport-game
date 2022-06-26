@@ -36,6 +36,11 @@ class Roads:
             return road
         return None
 
+    def cleanReservationsFrom(self, vehicle):
+        for road in self._roads:
+            if road.isReserved() and road._reservedTo == vehicle:
+                road._reservedTo = None
+
     def connectPlaces(self, loc1, loc2):
         if not loc1.hasTag("connectable") or not loc2.hasTag("connectable"):
             return False
