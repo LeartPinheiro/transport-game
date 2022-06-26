@@ -94,4 +94,5 @@ class Input:
         x, y = self.screenToWorld(self.mouse[0], self.mouse[1])
         self.world.vehicles.newVehicle(x, y)
         index = len(self.world.vehicles.all()) - 1
-        self.world.vehicles._vehicles[index]._target = (9 - index, 9 - index)
+        self.world.vehicles._vehicles[index].setTarget((9 - index, 9 - index))
+        self.world.vehicles._vehicles[index].setTarget((index, index))

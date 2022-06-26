@@ -11,6 +11,7 @@ class Vehicle:
         self._speed = 4
         self._moveProgress = 0
         self._path = None
+        self._targets = []
         self._target = None
         self._packageTarget = None
         self._inventory = []
@@ -18,8 +19,16 @@ class Vehicle:
     def moveProgress(self):
         return self._moveProgress
 
+    def addTarget(self, target):
+        if target not in self._targets:
+            self._targets.append(target)
+        self.updateTarget()
+        self.updatePath()
+
     def setTarget(self, target):
         self._target = target
+        if not target in self._targets:
+            self._targets.append(target)
         self.updatePath()
 
     def updateDirection(self):
@@ -36,6 +45,8 @@ class Vehicle:
             self.move()
 
     def canMove(self):
+        if self._target is not None and self._path is None:
+            self.updateTarget()
         if self._path is None:
             return False
         if self._world.vehicles.getVehicle(self._path[0][0], self._path[0][1]) is not None and self._path[0] != None:
@@ -50,9 +61,26 @@ class Vehicle:
             return True
         return False
 
+    def updateTarget(self):
+        if len(self._targets) > 0:
+            for target in self._targets:
+                self._target = target
+                self.updatePath()
+                if self._path is not None:
+                    return 
+        else:
+            self._target = None
+
+    def removeTarget(self, target):
+        if target in self._targets:
+            self._targets.remove(target)
+        if self._target == target:
+            self.updateTarget()
+        
+
     def updatePath(self):
         if self.x == self._target[0] and self.y == self._target[1]:
-            self._target = None
+            self.removeTarget(self._target)
             self._path = None
             self._world.roads.cleanReservationsFrom(self)
             return
@@ -63,6 +91,7 @@ class Vehicle:
         x, y = self.x, self.y
         xt, yt = self._target[0], self._target[1]
         self._path = pathfinder.findPath(self._world, x, y, xt, yt)
+
 
     def move(self):
         if self._target is None:
