@@ -1,8 +1,6 @@
 import world as wd
-import utils
 import render as rd
 import input as inp
-import pathfinder
 
 gridWidth = 10
 gridHeight = 10

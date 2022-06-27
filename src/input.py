@@ -54,14 +54,16 @@ class Input:
         road = self.world.roads.getRoad(x, y)
         if road is not None:
             self.world.roads.deleteRoad(road)
-            print(self.world.roads.all())
 
     def keyDown(self, event):
         if event.key == self.pygame.K_ESCAPE:
             self.pygame.quit()
             quit()
         if event.key == self.pygame.K_r:
-            print(self.world.roads.all())
+            x, y = self.screenToWorld(self.mouse[0], self.mouse[1])
+            rea = self.world.roads.randomReachableRoad(x, y)
+            if rea is not None:
+                print(f"{rea.x}, {rea.y}")
         if event.key == self.pygame.K_UP:
             self.render.zoomIn()
         if event.key == self.pygame.K_DOWN:
@@ -96,3 +98,4 @@ class Input:
         index = len(self.world.vehicles.all()) - 1
         self.world.vehicles._vehicles[index].setTarget((9 - index, 9 - index))
         self.world.vehicles._vehicles[index].setTarget((index, index))
+        

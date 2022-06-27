@@ -1,4 +1,6 @@
+import random
 import utils
+import pathfinder
 from connectable import Connectable
 
 
@@ -94,7 +96,23 @@ class Roads:
                 road2.removeSide(utils.getOppositeSide(side))
         self._roads.remove(road)
         self.deleteEmptyRoads()
-        return True
+        return 
+    #random road who have a path to x,y  
+    def randomReachableRoad(self, x, y):
+        if not self._world.isValid(x, y):
+            return None
+        start = self.getRoad(x, y)
+        if start is None:
+            return None
+        choices = []
+        for road in self._roads:
+            path = pathfinder.findPath(self._world,start.x,start.y,road.x,road.y)
+            if path is not None:
+                choices.append(road)
+        if len(choices) == 0:
+            return None
+        return random.choice(choices)
+
 
     def deleteRoadAt(self, x, y):
         road = self.getRoad(x, y)
