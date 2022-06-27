@@ -59,16 +59,17 @@ class MovementProcessor:
         xt, yt = self._target[0], self._target[1]
         self._path = pathfinder.findPath(self._world, x, y, xt, yt)
     
-    def updateTarget(self):
+    def updateTarget(self,add_road = False):
         if len(self._vehicle._targets) > 0:
             for target in self._vehicle._targets:
                 self._target = target
                 self._updatePath()
                 if self._path is not None:
                     return 
-        target = self._world.roads.randomReachableRoad(self._vehicle.x, self._vehicle.y)
-        if target is not None:
-            self.setTarget((target.x,target.y),False)
+        if add_road:
+            target = self._world.roads.randomReachableRoad(self._vehicle.x, self._vehicle.y)
+            if target is not None:
+                self.setTarget((target.x,target.y),False)
 
     def move(self):
         if self._target is None:
